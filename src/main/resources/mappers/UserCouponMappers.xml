@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.UserCouponMapper">
+
+<!--    1. 첫 회원가입 시 쿠폰발급-->
+<!--    2. 이미 발급된 쿠폰이 있는지 체크하기 boolean -> 쿠폰이 있는지 여부를 true 또는 false로 반환
+            true면 x false 반환-->
+<!--    3. 쿠폰 사용시 상태 변경 : 쿠폰이 사용되면 상태를 'ISSUED(발급된)'에서 'USED(사용됨)' 변경 -->
+<!--    4. 기간내 사용하지 않으면 자동으로 상태 변경 (발급 후 일년이내) : 더 생각하고 구현해보기 -->
+
+<!--    회원가입시 쿠폰 발급 쿼리문-->
+    <insert id="InsertUserNewCoupon" parameterType="com.green.smarty.vo.CouponVO">
+        INSERT INTO coupon (coupon_id,coupon_code,coupon_name,issue_date,expiry_date,user_id,status,discount_rate)
+        VALUES (#{coupon_id}, #{coupon_code}, #{coupon_name},#{issue_date},#{expiry_date},#{user_id},#{status},#{discount_rate})
+    </insert>
+
+<!--    이미 발급을 받았는지 체크 (중복체크)-->
+    <select id="CheckExistingCoupon" resultType="boolean" parameterType="String">
+        SELECT COUNT(*) > 0
+        FROM coupon
+        WHERE user_id = #{user_id} AND status = 'ISSUED'
+    </select>
+
+<!--    쿠폰 사용하면 상태 바뀜 ex: ISSUED > USED -->
+    <update id="UserCouponStatus" parameterType="com.green.smarty.vo.CouponVO">
+        UPDATE coupon
+        SET status = 'USED', issue_date = NOW()
+        WHERE coupon_id = #{coupon_id} AND user_id = #{user_id} AND status = 'ISSUED';
+    </update>
+
+<!--    쿠폰목록 불러오기-->
+    <select id="getCouponsByUser" parameterType="string" resultType="com.green.smarty.vo.CouponVO">
+        SELECT *
+        FROM coupon
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 생일 축하 쿠폰 발급-->
+    <insert id="insertBirthdayCoupon" parameterType="com.green.smarty.vo.CouponVO">
+        INSERT INTO coupon (coupon_id, coupon_code, coupon_name, issue_date, expiry_date, user_id, status, discount_rate)
+        VALUES (#{coupon_id}, #{coupon_code}, #{coupon_name}, #{issue_date}, #{expiry_date}, #{user_id}, #{status},#{discount_rate} )
+    </insert>
+
+    <!-- 생일 축하 쿠폰 중복 금지 -->
+    <select id="selectCouponByUserIdAndName" parameterType="map" resultType="com.green.smarty.vo.CouponVO">
+        SELECT * FROM coupon
+        WHERE user_id = #{user_id} AND coupon_name = #{coupon_name} AND status = 'ACTIVE'
+    </select>
+
+
+
+</mapper>

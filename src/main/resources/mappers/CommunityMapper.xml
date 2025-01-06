@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.CommunityMapper">
+
+    <!-- Community 게시글 전체 조회 -->
+    <select id="getCommunityPosts" resultType="com.green.smarty.dto.CommunityDTO">
+        SELECT
+        board_id AS id,
+        title,
+        content,
+        send_date,
+        content_type,
+        view_count,
+        'board' AS source
+        FROM board
+        WHERE is_deleted = 0
+
+        UNION ALL
+
+        SELECT
+        announce_id AS id,
+        title,
+        content,
+        send_date,
+        'announcement' AS content_type,
+        view_count,
+        'announce' AS source
+        FROM announce
+
+        ORDER BY send_date DESC
+    </select>
+</mapper>

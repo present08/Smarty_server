@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.AdminStatusMapper">
+
+    <select id="getReservation" parameterType="java.util.Map">
+        select
+        r.reservation_id, c.court_id, c.court_name,
+        r.user_id, r.reservation_start, r.reservation_end,
+        a.attendance_status
+        from reservation r
+        left join court c
+        on c.court_id=r.court_id
+        left join attendance a
+        on r.reservation_id=a.reservation_id
+        where c.facility_id=#{facility_id} and DATE(r.reservation_start)=#{date};
+    </select>
+    <select id="getEnrollment" parameterType="java.util.Map">
+        select e.enrollment_id, c.class_id, c.class_name,
+        c.start_date, c.end_date, c.class_size, count(e.user_id) register
+        from enrollment e
+        left join class c
+        on c.class_id=e.class_id
+        and e.enrollment_status="승인완료"
+        left join attendance a
+        on e.enrollment_id=a.enrollment_id
+        where #{date} BETWEEN c.start_date AND c.end_date and c.facility_id=#{facility_id}
+        group by c.class_id;
+    </select>
+    <select id="getAttendance" parameterType="java.util.Map">
+        select e.user_id, a.attendance_status, a.checkin_date
+        from enrollment e
+        join attendance a on a.enrollment_id=e.enrollment_id
+        where e.class_id=#{class_id} and DATE(a.checkin_date)=#{date};
+    </select>
+    <select id="getNewUser" resultType="com.green.smarty.vo.UserVO">
+        select * from user
+        where DATE(join_date) BETWEEN #{start} AND #{date}
+        order by join_date desc;
+    </select>
+    <select id="getPermission" resultType = "com.green.smarty.dto.PermissionDTO">
+        select e.enrollment_id, u.user_id, u.user_name, c.class_name, c.start_date, c.end_date, p.amount, e.enrollment_status from enrollment e join class c on e.class_id = c.class_id join user u on u.user_id = e.user_id join payment p on p.enrollment_id = e.enrollment_id
+    </select>
+    <update id = "enrollment_update" parameterType="string">
+        update enrollment set enrollment_status = '승인완료' where enrollment_id = #{enrollment_id}
+    </update>
+    <select id = "getPaymentData" parameterType='map'>
+        select  A.reservation_id, A.facility_name,  A.court_name, p.payment_date, p.amount, 
+		COALESCE(A.user_id, B.user_id, C.user_id) AS user_id,  B.class_name,  B.enrollment_id, C.product_name, C.rental_id from payment p 
+        left join (select r.reservation_id, f.facility_name, c.court_name, r.user_id  from reservation r join court c using(court_id) 
+        join facility f on c.facility_id = f.facility_id) A using(reservation_id)
+        left join (select c.class_name, e.enrollment_id, e.user_id from enrollment e join class c on e.class_id = c.class_id) B using(enrollment_id)
+        left join (select p.product_name, r.rental_id, r.user_id from rental r join product p on r.product_id = p.product_id) C on p.user_id = C.user_id
+        where p.payment_date BETWEEN #{frist_date} and #{second_date};
+    </select>
+</mapper>

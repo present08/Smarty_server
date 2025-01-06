@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.PublicMapper">
+<!-- List -->
+<select id="getAnnounceAll" resultType="com.green.smarty.vo.AnnounceVO">
+    select * from Announce
+</select>
+<select id="getAttendanceAll" resultType="com.green.smarty.vo.AttendanceVO">
+    select * from Attendance
+</select>
+<select id="getBoardAll" resultType="com.green.smarty.vo.BoardVO">
+    select * from Board
+</select>
+<select id="getChatbotAll" resultType="com.green.smarty.vo.ChatbotVO">
+    select * from Chatbot
+</select>
+<select id="getClassDetailAll" resultType="com.green.smarty.vo.ClassDetailVO">
+    select * from ClassDetail
+</select>
+<select id="getClassAll" resultType="com.green.smarty.vo.ClassVO">
+    select * from Class
+</select>
+<select id="getCourtAll" resultType="com.green.smarty.vo.CourtVO">
+    select * from Court
+</select>
+<select id="getEnrollmentAll" resultType="com.green.smarty.vo.EnrollmentVO">
+    select * from Enrollment
+</select>
+<select id="getFacilityAttachAll" resultType="com.green.smarty.vo.FacilityAttachVO">
+    select * from FacilityAttach
+</select>
+<select id="getFacilityAll" resultType="com.green.smarty.vo.FacilityVO">
+    select * from Facility
+</select>
+<select id="getLoginHistoryAll" resultType="com.green.smarty.vo.LoginHistoryVO">
+    select * from LoginHistory
+</select>
+<select id="getMembershipAll" resultType="com.green.smarty.vo.MembershipVO">
+    select * from Membership
+</select>
+<select id="getNotificationAll" resultType="com.green.smarty.vo.NotificationVO">
+    select * from Notification
+</select>
+<select id="getPaymentAll" resultType="com.green.smarty.vo.PaymentVO">
+    select * from Payment
+</select>
+<select id="getProductAttachAll" resultType="com.green.smarty.vo.ProductAttachVO">
+    select * from ProductAttach
+</select>
+<select id="getProductStatusAll" resultType="com.green.smarty.vo.ProductStatusVO">
+    select * from ProductStatus
+</select>
+<select id="getProductAll" resultType="com.green.smarty.vo.ProductVO">
+    select * from Product
+</select>
+<select id="getRentalAll" resultType="com.green.smarty.vo.RentalVO">
+    select * from Rental
+</select>
+<select id="getReservationAll" resultType="com.green.smarty.vo.ReservationVO">
+    select * from Reservation
+</select>
+<select id="getUserAll" resultType="com.green.smarty.vo.UserVO">
+    select * from User
+</select>
+
+<!-- One -->
+<select id="getAnnounce" resultType="com.green.smarty.vo.AnnounceVO" parameterType='int'>
+    select * from Announce where announce_id = #{announce_id}
+</select>
+<select id="getAttendance" resultType="com.green.smarty.vo.AttendanceVO" parameterType='string'>
+    select * from Attendance where attendance_id = #{attendance_id}
+</select>
+<select id="getBoard" resultType="com.green.smarty.vo.BoardVO" parameterType='int'>
+    select * from Board where board_id = #{board_id}
+</select>
+<select id="getChatbot" resultType="com.green.smarty.vo.ChatbotVO" parameterType='string'>
+    select * from Chatbot where chat_room = #{chat_room}
+</select>
+<select id="getClassDetail" resultType="com.green.smarty.vo.ClassDetailVO" parameterType='string'>
+    select * from ClassDetail where class_id = #{class_id}
+</select>
+<select id="getClassOne" resultType="com.green.smarty.vo.ClassVO" parameterType='string'>
+    select * from Class where class_id = #{class_id}
+</select>
+<select id="getCourt" resultType="com.green.smarty.vo.CourtVO" parameterType='string'>
+    select * from Court where court_id = #{court_id}
+</select>
+<select id="getEnrollment" resultType="com.green.smarty.vo.EnrollmentVO" parameterType='string'>
+    select * from Enrollment where enrollment_id = #{enrollment_id}
+</select>
+<select id="getFacilityAttach" resultType="com.green.smarty.vo.FacilityAttachVO" parameterType='string'>
+    select * from FacilityAttach where facility_id = #{facility_id}
+</select>
+<select id="getFacility" resultType="com.green.smarty.vo.FacilityVO" parameterType='string'>
+    select * from Facility where facility_id = #{facility_id}
+</select>
+<select id="getLoginHistory" resultType="com.green.smarty.vo.LoginHistoryVO" parameterType='int'>
+    select * from LoginHistory where id = #{id}
+</select>
+<select id="getMembership" resultType="com.green.smarty.vo.MembershipVO" parameterType='string'>
+    select * from Membership where membership_id = #{membership_id}
+</select>
+<select id="getNotification" resultType="com.green.smarty.vo.NotificationVO" parameterType='string'>
+    select * from Notification where notification_id = #{notification_id}
+</select>
+<select id="getPayment" resultType="com.green.smarty.vo.PaymentVO" parameterType='string'>
+    select * from Payment where payment_id = #{payment_id}
+</select>
+<select id="getProductAttach" resultType="com.green.smarty.vo.ProductAttachVO" parameterType='string'>
+    select * from ProductAttach where product_id = #{product_id}
+</select>
+<select id="getProductStatus" resultType="com.green.smarty.vo.ProductStatusVO" parameterType='string'>
+    select * from ProductStatus where status_id = #{status_id}
+</select>
+<select id="getProduct" resultType="com.green.smarty.vo.ProductVO" parameterType='string'>
+    select * from Product where product_id = #{product_id}
+</select>
+<select id="getRental" resultType="com.green.smarty.vo.RentalVO" parameterType='string'>
+    select * from Rental where rental_id = #{rental_id}
+</select>
+<select id="getReservation" resultType="com.green.smarty.vo.ReservationVO" parameterType='string'>
+    select * from Reservation where reservation_id = #{reservation_id}
+</select>
+<select id="getUser" resultType="com.green.smarty.vo.UserVO" parameterType='string'>
+    select * from User where user_id = #{user_id}
+</select>
+
+</mapper>

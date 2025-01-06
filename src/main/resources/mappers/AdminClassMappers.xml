@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.AdminClassMapper">
+
+    <insert id="register" parameterType="com.green.smarty.dto.ClassAdminDTO">
+        insert into class(class_id, facility_id, class_name, start_date, end_date, start_time, end_time, price, class_size)
+        values(#{class_id}, #{facility_id}, #{class_name}, #{start_date}, #{end_date}, #{start_time}, #{end_time}, #{price}, #{class_size});
+    </insert>
+
+    <insert id="registerDetail" parameterType="com.green.smarty.vo.ClassDetailVO">
+        insert into class_detail(class_id, weekday, class_date) values(#{class_id}, #{weekday}, #{class_date});
+    </insert>
+
+    <select id="getList">
+        select * from class where facility_id = #{facility_id}
+    </select>
+
+    <select id="read" resultType="com.green.smarty.vo.ClassVO">
+        select * from class where class_id = #{class_id}
+    </select>
+
+    <select id="getDetailList">
+        select distinct weekday, class_id from class_detail where class_id = #{class_id}
+    </select>
+
+    <update id="modify">
+        update class set class_name=#{class_name}, start_date=#{start_date}, end_date=#{end_date},
+        start_time=#{start_time}, end_time=#{end_time}, price=#{price}, class_size=#{class_size}
+        where class_id=#{class_id}
+    </update>
+
+    <delete id="remove">
+        delete from class where class_id=#{class_id}
+    </delete>
+    <delete id="removeDetail">
+        delete from class_detail where class_id=#{class_id}
+    </delete>
+
+
+</mapper>

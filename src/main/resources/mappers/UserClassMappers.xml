@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.UserClassMapper">
+    <!-- insert class -->
+    <insert id="insertClass" parameterType="com.green.smarty.vo.ClassVO">
+        insert into class(class_id,facility_id,class_name,start_date,end_date,start_time,end_time,price,class_size) values(#{class_id},#{facility_id},#{class_name},#{start_date},#{end_date},#{start_time},#{end_time},#{price},#{class_size});
+    </insert>
+    <insert id="insertClassDetail" parameterType="com.green.smarty.vo.ClassDetailVO">
+        insert into class_detail(class_id, weekday, class_date) values(#{class_id}, #{weekday}, #{class_date});
+    </insert>
+    <insert id="classEnroll" parameterType="com.green.smarty.vo.EnrollmentVO">
+        insert into enrollment(enrollment_id, class_id, user_id, enrollment_status) values(#{enrollment_id},#{class_id}, #{user_id}, #{enrollment_status})
+    </insert>
+
+    <!-- Select Class -->
+    <select id="getClassAll" resultType="com.green.smarty.vo.ClassVO">
+        select * from class
+    </select>
+    <select id="getClassVO" parameterType="string" resultType="com.green.smarty.vo.ClassVO">
+        select * from class where class_id = #{class_id}
+    </select>
+    <select id="getClassDTO" resultType="com.green.smarty.dto.UserClassDTO">
+        select c.*, f.facility_name from class c join facility f on c.facility_id = f.facility_id
+    </select>
+    <select id="getClassDetail" resultType="com.green.smarty.vo.ClassDetailVO">
+        select * from class_detail
+    </select>
+    <select id="getEnrollment" resultType="com.green.smarty.vo.EnrollmentVO">
+        select * from enrollment
+    </select>
+    <select id="getEnrollSize" parameterType="string" resultType="com.green.smarty.vo.EnrollmentVO">
+        select * from enrollment where class_id = #{class_id}
+    </select>
+    <select id="enrollCheck" parameterType="map" resultType="com.green.smarty.vo.EnrollmentVO">
+        select * from enrollment where user_id = #{user_id} and class_id = #{class_id}
+    </select>
+</mapper>

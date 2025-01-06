@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.AdminProductStatusMapper">
+
+    <!-- 상태 삽입 -->
+    <insert id="insertProductStatus" parameterType="com.green.smarty.vo.ProductStatusVO" useGeneratedKeys="true" keyProperty="status_id">
+        INSERT INTO product_status (status_id, product_id, current_status, updated_at)
+        VALUES (#{status_id}, #{product_id}, #{current_status}, CURRENT_TIMESTAMP);
+    </insert>
+
+    <!-- 특정 facility_id의 상품 상태 조회 -->
+    <select id="findProductStatusByFacility" parameterType="string" resultType="map">
+        SELECT
+        ps.status_id,
+        ps.product_id,
+        ps.current_status,
+        ps.updated_at,
+        p.product_name,
+        p.size,
+        CASE
+        WHEN ps.status_id LIKE '%Ind%' THEN 1
+        ELSE p.stock
+        END AS stock
+        FROM product_status ps
+        JOIN product p ON ps.product_id = p.product_id
+        WHERE p.facility_id = #{facilityId}
+    </select>
+
+    <!-- 모든 상품 상태 조회 -->
+    <select id="getAllProductStatuses" resultType="com.green.smarty.vo.ProductStatusVO">
+        SELECT * FROM product_status;
+    </select>
+
+    <!-- 특정 product_id의 상태 조회 -->
+    <select id="selectStatusByProductId" parameterType="string" resultType="com.green.smarty.vo.ProductStatusVO">
+        SELECT * FROM product_status WHERE product_id = #{product_id};
+    </select>
+
+    <!-- 현재 상태 조회 -->
+    <select id="getProductInfoByStatusId" resultType="map">
+        SELECT
+        ps.status_id,
+        ps.current_status,
+        p.product_id,
+        p.stock
+        FROM product_status ps
+        JOIN product p ON ps.product_id = p.product_id
+        WHERE ps.status_id = #{status_id};
+    </select>
+
+    <!-- 현재 상태 변경 -->
+    <update id="updateChangedStatus" parameterType="map">
+        UPDATE product_status
+        SET current_status = CASE
+        WHEN #{changedStatus} = '대여 가능' THEN TRUE
+        ELSE FALSE
+        END,
+        updated_at = CURRENT_TIMESTAMP
+        WHERE status_id = #{statusId};
+    </update>
+
+
+    <!-- 상태 복구 (대여 가능으로 변경) -->
+    <update id="restoreToAvailable" parameterType="string">
+        UPDATE product_status
+        SET current_status = TRUE, -- 대여 가능으로 복구
+        updated_at = CURRENT_TIMESTAMP
+        WHERE status_id = #{statusId};
+    </update>
+
+    <!-- stock 업데이트 -->
+    <update id="updateProductStock" parameterType="map">
+        UPDATE product
+        SET stock = #{stock}
+        WHERE product_id = #{product_id};
+    </update>
+
+    <!-- updated_at 갱신 -->
+    <update id="updateProductStatusUpdatedAt" parameterType="map">
+        UPDATE product_status
+        SET updated_at = CURRENT_TIMESTAMP
+        WHERE product_id = #{product_id};
+    </update>
+
+    <!-- 특정 ID에 대한 최대 suffix 값 조회 -->
+    <select id="findMaxSuffix" parameterType="string" resultType="int">
+        SELECT COALESCE(MAX(CAST(SUBSTRING(status_id, LENGTH(#{baseId}) + 1) AS UNSIGNED)), 0)
+        FROM product_status
+        WHERE status_id LIKE CONCAT(#{baseId}, '%');
+    </select>
+
+    <!-- 중복된 status_id 존재 여부 확인 -->
+    <select id="existsByStatusId" parameterType="string" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM product_status WHERE status_id = #{status_id};
+    </select>
+
+    <!-- 로그 삽입 -->
+    <insert id="insertStatusLog" parameterType="com.green.smarty.vo.ProductStatusLogVO">
+        INSERT INTO product_status_log (status_id, changed_status, change_quantity, created_at)
+        VALUES (#{status_id}, #{changed_status}, #{change_quantity}, CURRENT_TIMESTAMP);
+    </insert>
+
+    <!-- 로그 조회 -->
+    <select id="findLogsByStatusId" parameterType="string" resultType="com.green.smarty.vo.ProductStatusLogVO">
+        SELECT log_id, status_id, changed_status, change_quantity, created_at
+        FROM product_status_log
+        WHERE status_id = #{statusId}
+        ORDER BY created_at DESC;
+    </select>
+
+    <!-- 특정 product_id 기반 status 로그 조회 -->
+    <select id="findLogsByProductId" parameterType="string" resultType="com.green.smarty.vo.ProductStatusLogVO">
+        SELECT log_id, status_id, changed_status, change_quantity, created_at
+        FROM product_status_log
+        WHERE status_id IN (
+        SELECT status_id
+        FROM product_status
+        WHERE product_id = #{product_id}
+        )
+        ORDER BY created_at DESC;
+    </select>
+
+    <!-- 가장 최근 로그 조회 -->
+    <select id="findLatestLogByStatusId" parameterType="string" resultType="com.green.smarty.vo.ProductStatusLogVO">
+        SELECT log_id, status_id, changed_status, change_quantity, created_at
+        FROM product_status_log
+        WHERE status_id = #{statusId}
+        ORDER BY created_at DESC
+        LIMIT 1;
+    </select>
+
+    <!-- 로그 삭제 -->
+    <delete id="deleteLogByLogId" parameterType="int">
+        DELETE FROM product_status_log WHERE log_id = #{logId};
+    </delete>
+
+    <select id="findStatusCountsByProductId" parameterType="string" resultType="map">
+        SELECT
+        ps.current_status,
+        SUM(pl.change_quantity) AS total_quantity
+        FROM product_status ps
+        LEFT JOIN product_status_log pl ON ps.status_id = pl.status_id
+        WHERE ps.product_id = #{productId}
+        GROUP BY ps.current_status;
+    </select>
+
+    <!-- 특정 상태 ID의 change_quantity 합계 조회 -->
+    <select id="calculateTotalChangeQuantity" parameterType="string" resultType="int">
+        SELECT COALESCE(SUM(change_quantity), 0)
+        FROM product_status_log
+        WHERE status_id = #{statusId}
+    </select>
+
+    <update id="updateAvailability" parameterType="string">
+        UPDATE product_status
+        JOIN (
+        SELECT ps.status_id AS sid,
+        p.stock - COALESCE(SUM(pl.change_quantity), 0) AS remaining_stock
+        FROM product_status ps
+        JOIN product p ON ps.product_id = p.product_id
+        LEFT JOIN product_status_log pl ON ps.status_id = pl.status_id
+        WHERE ps.status_id = #{statusId}
+        GROUP BY ps.status_id, p.stock
+        ) AS subquery ON product_status.status_id = subquery.sid
+        SET product_status.current_status = CASE
+        WHEN subquery.remaining_stock > 0 THEN TRUE
+        ELSE FALSE
+        END,
+        product_status.updated_at = CURRENT_TIMESTAMP;
+    </update>
+
+
+</mapper>

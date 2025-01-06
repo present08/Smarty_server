@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.UserFacilityMapper">
+
+<!--    모든 시설 조회-->
+    <select id="getAllFacilities" resultType="com.green.smarty.dto.FacilityDTO">
+        SELECT
+            facility_id,
+            facility_name,
+            open_time,
+            close_time,
+            default_time,
+            basic_fee,
+            rate_adjustment,
+            hot_time,
+            contact,
+            info,
+            caution,
+            court,
+            product,
+            facility_status,
+            facility_images
+        FROM
+            facility
+    </select>
+
+<!--    특정 시설 조회-->
+    <select id="getFacilityById" parameterType="String" resultType="com.green.smarty.dto.FacilityDTO">
+        SELECT
+            facility_id,
+            facility_name,
+            open_time,
+            close_time,
+            default_time,
+            basic_fee,
+            rate_adjustment,
+            hot_time,
+            contact,
+            info,
+            caution,
+            court,
+            product,
+            facility_status,
+            facility_images
+        FROM
+            facility
+        WHERE
+            facility_id = #{facility_id}
+    </select>
+
+    <select id="getUserReservationFacility" parameterType="String" resultType="com.green.smarty.dto.UserReservationFacilityDTO">
+        SELECT
+            f.facility_id,
+            f.facility_name,
+            r.reservation_id,
+            r.court_id
+        FROM
+            reservation r
+        INNER JOIN
+            court c ON r.court_id = c.court_id
+        INNER JOIN
+            facility f ON c.facility_id = f.facility_id
+        WHERE
+            r.user_id = #{user_id}
+    </select>
+
+<!--    (영준) facility_id 로 facility_name 조회-->
+    <select id="getFacilityNameById" parameterType="String">
+        SELECT facility_name
+        FROM facility
+        WHERE facility_id = #{facility_id}
+    </select>
+    <select id="getClassNameByReservationId" parameterType="String">
+        SELECT
+        c.class_name
+        FROM
+        reservation r
+        JOIN
+        class c
+        ON
+        r.court_id = c.facility_id
+        WHERE
+        r.reservation_id = #{reservation_id}
+    </select>
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.AnnounceMapper">
+
+<!--    게시글 작성-->
+    <insert id="insertAnnounce" parameterType="com.green.smarty.dto.AnnounceDTO" useGeneratedKeys="true" keyProperty="announce_id">
+        insert into announce (content, title, send_date, isImportant, view_count)
+        values (#{content}, #{title}, now(), #{isImportant}, 0)
+    </insert>
+
+<!--   announce_id로 게시글 찾기 -->
+    <select id="selectAnnounceById" resultType="com.green.smarty.dto.AnnounceDTO" parameterType="int">
+        select * from announce where announce_id = #{announce_id}
+    </select>
+
+<!--    게시글 삭제 -->
+    <delete id="removeAnnounce" parameterType="int">
+        delete from announce where announce_id = #{announce_id}
+    </delete>
+
+<!--게시글 수정-->
+    <update id="modifyAnnounce" parameterType="com.green.smarty.dto.AnnounceDTO">
+        UPDATE announce SET title = #{title} , content = #{content}
+        WHERE announce_id = #{announce_id}
+    </update>
+
+    <!-- 조회수 증가 -->
+    <update id="updateViewCount" parameterType="int">
+        UPDATE announce SET view_count = view_count + 1 WHERE announce_id = #{announce_id}
+    </update>
+
+    <!-- 전체 공지사항 조회 -->
+    <select id="selectAllAnnounce" resultType="com.green.smarty.dto.AnnounceDTO">
+        SELECT * FROM announce ORDER BY send_date DESC
+    </select>
+
+    <!-- 제목, 내용, 전체 조건으로 검색 -->
+    <select id="searchAnnounce" resultType="com.green.smarty.dto.AnnounceDTO">
+        SELECT * FROM announce
+        WHERE
+        <choose>
+            <when test="type == 'title'">
+                title LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+            <when test="type == 'content'">
+                content LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+            <otherwise>
+                (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+            </otherwise>
+        </choose>
+        ORDER BY send_date DESC
+    </select>
+
+</mapper>

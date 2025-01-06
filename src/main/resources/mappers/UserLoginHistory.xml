@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.UserLoginHistoryMapper">
+
+    <!-- 로그인 성공 기록 삽입 -->
+    <insert id="insertLoginHistory" parameterType="com.green.smarty.vo.LoginHistoryVO">
+        INSERT INTO login_history (user_id, login_time, ip_address, login_status, user_agent)
+        VALUES (#{user_id}, NOW(), #{ip_address}, #{login_status}, #{user_agent})
+    </insert>
+
+    <!-- 로그인 실패 기록 삽입 -->
+    <insert id="insertLoginFailureHistory" parameterType="com.green.smarty.vo.LoginHistoryVO">
+        INSERT INTO login_history (user_id, login_time, ip_address, login_status, user_agent)
+        VALUES (#{user_id}, NOW(), #{ip_address}, 'FAILURE', #{user_agent})
+    </insert>
+
+    <!-- 로그아웃 시간 업데이트 -->
+    <update id="updateLogoutTime" parameterType="com.green.smarty.vo.LoginHistoryVO">
+        UPDATE login_history
+        SET logout_time = NOW()
+        WHERE user_id = #{user_id} AND logout_time IS NULL
+    </update>
+
+</mapper>

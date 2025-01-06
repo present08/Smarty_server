@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.AdminFacilityMapper">
+
+    <insert id="register" parameterType="com.green.smarty.vo.FacilityVO">
+        insert into facility (facility_id, facility_name, open_time, close_time, default_time,
+        basic_fee, rate_adjustment, hot_time, contact, info, caution, court, product,
+        facility_status, facility_images)
+        values (#{facility_id}, #{facility_name}, #{open_time}, #{close_time}, #{default_time},
+        #{basic_fee}, #{rate_adjustment}, #{hot_time}, #{contact}, #{info}, #{caution}, #{court}, #{product},
+        #{facility_status}, #{facility_images})
+    </insert>
+
+    <insert id="fileUpload" parameterType="map">
+        insert into facility_attach (facility_id, origin_path, thumbnail_path, file_name)
+        values (#{facility_id}, #{origin_path}, #{thumbnail_path}, #{file_name})
+    </insert>
+
+    <select id="getList">
+        select * from facility
+    </select>
+
+    <select id="read" resultType="com.green.smarty.vo.FacilityVO">
+        select * from facility where facility_id=#{facility_id}
+    </select>
+
+    <select id="getImages">
+        select * from facility_attach where facility_id=#{facility_id}
+    </select>
+
+    <update id="modify" parameterType="com.green.smarty.vo.FacilityVO">
+        update facility set facility_name=#{facility_name}, open_time=#{open_time}, close_time=#{close_time},
+        default_time=#{default_time}, basic_fee=#{basic_fee}, rate_adjustment=#{rate_adjustment}, hot_time=#{hot_time},
+        contact=#{contact}, info=#{info}, caution=#{caution}, court=#{court},
+        facility_status=#{facility_status}, facility_images=#{facility_images}
+        where facility_id=#{facility_id}
+    </update>
+
+    <delete id="remove" parameterType="String">
+        delete from facility where facility_id=#{facility_id}
+    </delete>
+
+    <delete id="fileRemove">
+        delete from facility_attach where facility_id=#{facility_id}
+    </delete>
+
+</mapper>
+

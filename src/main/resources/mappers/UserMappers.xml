@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.UserMapper">
+
+<!--    회원가입 페이지 : 사용자 정보 조회(id, email) , 사용자 추가, QR코드 업데이트 -->
+
+    <!-- 사용자 정보 조회 by user_id -->
+    <select id="getById" parameterType="String" resultType="com.green.smarty.vo.UserVO">
+        SELECT * FROM user
+        WHERE user_id = #{user_id}
+    </select>
+
+    <!-- 사용자 정보 조회 by email -->
+    <select id="getByEmail" parameterType="String" resultType="com.green.smarty.vo.UserVO">
+        SELECT * FROM user WHERE email = #{email}
+    </select>
+
+    <!-- 사용자 추가 -->
+    <insert id="insertUser" parameterType="com.green.smarty.vo.UserVO">
+        INSERT INTO user (user_id, user_name, email, password, phone, address, birthday,
+        join_date, login_date, user_status, level, qr_Code)
+        VALUES (#{user_id}, #{user_name}, #{email}, #{password}, #{phone}, #{address}, #{birthday},
+        #{join_date}, #{login_date}, #{user_status}, #{level}, #{qrCode})
+    </insert>
+
+    <!-- QR코드 업데이트 -->
+    <update id="updateUserWithQRCode">
+        UPDATE user SET qr_Code = #{qrCode} WHERE user_id = #{user_id}
+    </update>
+
+    <!--  로그인 페이지-->
+
+    <!-- 로그인시 login_date 로그인 한 날짜로 업데이트-->
+    <update id="updateLoginDate" parameterType="String">
+        UPDATE user
+        SET login_date = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <!--    아이디 찾기 페이지-->
+
+    <!-- 아이디 찾기-->
+    <select id="findByID" resultType="String" parameterType="map">
+        SELECT user_id FROM user
+        WHERE email = LOWER(#{email})
+        AND user_name = LOWER(#{user_name})
+    </select>
+
+    <!--    비밀번호 찾기 페이지-->
+
+    <!-- 비밀번호 찾기 -->
+    <select id="resetPassword" parameterType="map" resultType="com.green.smarty.vo.UserVO">
+        SELECT * FROM user
+        WHERE user_id = #{user_id}
+        AND user_name = #{user_name}
+        AND user_phone = #{user_phone}
+    </select>
+
+    <!--    비밀번호 변경 페이지-->
+
+    <!-- 비밀번호 바꾸기-->
+    <update id="updatePassword" parameterType="com.green.smarty.vo.UserVO">
+        UPDATE user SET password = #{password} WHERE user_id = #{user_id}
+    </update>
+
+
+    <!-- 휴먼 아디 조회 후 상태 변경-->
+
+    <!-- 유저ID로 검색하여 휴면 여부 검색 -->
+    <select id="findUserById" parameterType="String" resultType="com.green.smarty.vo.UserVO">
+        SELECT *
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 상태 업데이트 -->
+    <update id="updateUserStatus">
+        UPDATE user
+        SET user_status = #{userStatus}
+        WHERE user_id = #{user_id}
+    </update>
+
+    <!--  마이페이지 회원정보 수정 페이지-->
+
+    <!-- 회원 수정 -->
+    <update id="updateUserInfo" parameterType="com.green.smarty.vo.UserVO" >
+        UPDATE user
+        SET address = #{address}, phone = #{phone}
+        WHERE user_id = #{user_id}
+    </update>
+
+
+    <!--  마이페이지 수강신청 내역 불러오기 -->
+
+    <!-- 유저 수강신청 불러오기-->
+    <select id="getClassUserApplication" parameterType="String" resultType="com.green.smarty.dto.UserClassApplicationDTO">
+        SELECT
+        u.user_id,
+        u.user_name,
+        e.enrollment_id,
+        e.enrollment_status,
+        e.class_id,
+        c.class_name,
+        c.start_date,
+        c.end_date,
+        c.start_time,
+        c.end_time,
+        c.price
+        FROM
+        enrollment e
+        INNER JOIN user u ON u.user_id = #{user_id}
+        INNER JOIN class c ON e.class_id = c.class_id
+        WHERE e.user_id = #{user_id}
+    </select>
+
+    <!--  마이페이지 상품 대여 내역 불러오기 -->
+
+    <!-- 상품 대여 리스트 불러오기-->
+    <select id="getUserMyPageRentalListData" parameterType="String" resultType="com.green.smarty.dto.ProductRentalMyPageUserDTO">
+        SELECT
+        u.user_id,
+        u.user_name,
+        f.facility_name,
+        p.product_id,
+        p.product_name,
+        p.price,
+        p.size,
+        r.rental_date,
+        r.return_date
+        FROM
+        rental r
+        INNER JOIN user u
+        ON u.user_id = r.user_id
+        INNER JOIN product p
+        ON p.product_id = r.product_id
+        INNER JOIN facility f
+        ON f.facility_id = p.facility_id
+        WHERE
+        u.user_id = #{user_id};
+    </select>
+
+    <!-- 마이페이지 생일축하 쿠폰 발급  -->
+
+    <!--    생일 쿠폰 발급 위한 쿼리-->
+    <select id="getUsersWithBirthday" resultType="com.green.smarty.vo.UserVO" parameterType="map">
+        SELECT *
+        FROM user
+        WHERE MONTH(birthday) = #{month}
+        AND DAY(birthday) = #{day}
+    </select>
+
+
+    <!-- 영준이가 사용중인 쿼리  -->
+
+    <!--    영준-->
+    <select id="getUserEmailById" parameterType="String">
+        SELECT email
+        FROM user
+        WHERE user_id = #{user_id}
+    </select>
+
+    <select id="getUserNameById" parameterType="String">
+        SELECT * FROM user
+        WHERE user_id = #{user_id}
+    </select>
+
+    <select id="getIdByEmail" parameterType="String">
+        SELECT user_id FROM user
+        WHERE email = #{email}
+    </select>
+
+    <select id="getUserHuman" parameterType="com.green.smarty.vo.UserVO">
+        SELECT * FROM user
+        WHERE login_date &lt;= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+        AND user_status = 1;
+    </select>
+
+<!--    영준-->
+    <select id="humanSevenbefore" parameterType="com.green.smarty.vo.UserVO">
+        SELECT *
+        FROM user
+        WHERE login_date = DATE_ADD(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), INTERVAL 7 DAY);
+    </select>
+
+<!--    영준-->
+    <select id="getUserForSendMail" parameterType="com.green.smarty.vo.UserVO">
+        SELECT user_id, user_name, email
+        FROM user
+    </select>
+
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.UserProductMapper">
+    <!--sql 구문을 써서 db에서 불러온다-->
+
+    <insert id="insertProduct" parameterType="com.green.smarty.vo.ProductVO">
+        INSERT INTO product ( product_id, facility_id, product_name, management_type, stock, price, product_images, size )
+        VALUES (#{product_id}, #{facility_id}, #{product_name}, #{management_type}, #{stock}, #{price}, #{product_images}, #{size} )
+    </insert>
+
+    <select  id="getAllProducts" resultType="com.green.smarty.vo.ProductVO">
+        SELECT
+        p.product_id,
+        p.facility_id,
+        p.product_name,
+        p.price,
+        p.stock,
+        p.size,
+        p.product_images,
+        f.facility_name
+        FROM
+        product p
+        LEFT JOIN
+        facility f
+        ON
+        p.facility_id = f.facility_id
+        ORDER BY
+        p.product_id DESC
+    </select>
+
+    <delete id="deleteProduct">
+        DELETE FROM product WHERE product_id = #{product_id}
+    </delete>
+
+    <update id="updateProduct" parameterType="com.green.smarty.vo.ProductVO">
+        UPDATE
+        product
+        SET
+        product_name = #{product_name},
+        price = #{price},
+        facility_id = #{facility_id}
+        WHERE
+        product_id = #{product_id}
+    </update>
+
+    <select id="getProductById" resultType="com.green.smarty.vo.ProductVO">
+        SELECT
+        p.product_id,
+        p.facility_id,
+        p.product_name,
+        p.price,
+        p.stock,
+        p.size,
+        p.product_images,
+        f.facility_name,
+        pa.origin_path,
+        pa.thumbnail_path,
+        pa.file_name
+        FROM
+        product p
+        LEFT JOIN
+        facility f
+        ON
+        p.facility_id = f.facility_id
+        LEFT JOIN
+        product_attach pa
+        ON
+        p.product_id = pa.product_id
+        WHERE
+        p.product_id = #{product_id}
+    </select>
+
+    <select id="getProductNameByProductId" parameterType="String">
+        SELECT product_name
+        FROM product
+        WHERE product_id = #{product_id}
+    </select>
+
+    <select id="getProductImages" resultType="String">
+        SELECT file_name
+        FROM product_attach
+        WHERE product_id = #{product_id}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.AdminCourtMapper">
+    <insert id="register" parameterType="com.green.smarty.vo.CourtVO">
+        insert into court (court_id, facility_id, court_name, court_status)
+        values (#{court_id}, #{facility_id}, #{court_name}, #{court_status})
+    </insert>
+
+    <select id="getList" resultType="com.green.smarty.vo.CourtVO">
+        select * from court where facility_id=#{facility_id}
+    </select>
+
+    <select id="read" resultType="com.green.smarty.vo.CourtVO">
+        select * from court where court_id=#{court_id}
+    </select>
+
+    <select id="maxCourtIdx">
+        select max(court_id) from court where facility_id=#{facility_id}
+    </select>
+
+    <update id="modify">
+        update court set court_name=#{court_name}, court_status=#{court_status} where court_id=#{court_id}
+    </update>
+
+<!--    <delete id="remove">-->
+<!--        delete c, r from court c, reservation r where c.court_id=#{court_id}-->
+<!--    </delete>-->
+    <delete id="remove">
+        delete from court where court_id=#{court_id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.UserReservationMapper">
+    <!-- insert -->
+    <insert id="insertFacility" parameterType="com.green.smarty.vo.FacilityVO">
+        insert into facility(facility_id , facility_name, open_time, close_time, default_time,basic_fee,rate_adjustment,hot_time,contact, info, caution, court,product, facility_status, facility_images) values(#{facility_id}, #{facility_name}, #{open_time}, #{close_time}, #{default_time}, #{basic_fee}, #{rate_adjustment}, #{hot_time},#{contact}, #{info}, #{caution}, #{court}, #{product}, #{facility_status}, #{facility_images})
+    </insert>
+
+    <insert id="insertUser" parameterType="com.green.smarty.vo.UserVO">
+        INSERT INTO user_tbl (user_id, user_name, email, password, phone, address, birthday, join_date, login_date, user_status, level, qr_Code)
+        VALUES (#{user_id}, #{user_name}, #{email}, #{password}, #{phone}, #{address}, #{birthday}, #{join_date}, #{login_date}, #{user_status}, #{level}, #{qrCode})
+    </insert>
+    
+    <insert id="insertReservation" parameterType="com.green.smarty.dto.ReservationDTO">
+        insert into reservation(reservation_id, user_id, court_id, reservation_start, reservation_end)
+        select #{reservation_id}, #{user_id}, c.court_id, #{reservation_start}, #{reservation_end} from court c
+        join facility f on c.facility_id = f.facility_id where c.facility_id = #{facility_id} and c.court_id = #{court_id}
+    </insert>
+
+    <insert id="insertCourt" parameterType="com.green.smarty.vo.CourtVO">
+        insert into court(court_id, court_name, facility_id, court_status) values(#{court_id}, #{court_name}, #{facility_id}, #{court_status})
+    </insert>
+
+    <!-- select -->
+    <select id="getFacility" parameterType="String" resultType="com.green.smarty.vo.FacilityVO">
+        select * from facility where facility_id =#{facility_id};
+        <!-- select * from facility f inner join court c on c.facility_id = f.facility_id and c.court_id = #{court_id} where f.facility_id= #{facility_id}; -->
+    </select>
+    <select id="getFacilityAll" resultType="com.green.smarty.vo.FacilityVO">
+        select * from facility
+        <!-- select * from facility f inner join court c on c.facility_id = f.facility_id and c.court_id = #{court_id} where f.facility_id= #{facility_id}; -->
+    </select>
+    <select id="getFacilityOFCourt" resultType="com.green.smarty.dto.FacilityDTO">
+        select * from facility f join court c on f.facility_id = c.facility_id
+    </select>
+    <select id="getFacilityImg" resultType="com.green.smarty.vo.FacilityAttachVO">
+        select * from facility_attach where facility_id  = #{facility_id}
+    </select>
+
+    <!-- <select id="getReservation" parameterType="String" resultType="com.green.smarty.vo.ReservationVO">
+        select * from reservation join court where facility_id = #{facility_id}
+    </select> -->
+    <select id="getReservation" parameterType="map" resultType="com.green.smarty.dto.ReservationDTO">
+        select * from reservation r join court c on r.court_id = c.court_id and c.facility_id = #{facility_id} and c.court_id = #{court_id};
+    </select>
+    <select id="getReservationAll" resultType="com.green.smarty.vo.ReservationVO">
+        select * from reservation
+    </select>
+
+      <select id="getReservationUserDate" parameterType="string" resultType="com.green.smarty.dto.ReservationUserDTO">
+        select u.user_id, u.user_name, r.reservation_start, r.reservation_end, c.court_name, f.facility_name, r.reservation_id from reservation r join user u on r.user_id = #{user_id}  and u.user_id = #{user_id}
+        join court c on r.court_id = c.court_id
+        join facility f on f.facility_id = c.facility_id;
+    </select>
+
+    <delete id="deleteReservationID" parameterType="map" >
+        delete from ${table} where reservation_id = #{reservation_id}
+    </delete>
+
+    <delete id="deleteReservation" parameterType="string" >
+        delete from reservation where reservation_id = #{reservation_id}
+    </delete>
+
+    <select id="getUserMembership" resultType="String" parameterType="string">
+        select membership_level from membership where user_id = #{user_id}
+    </select>
+
+    <!--    (영준) user_id가 아니라 이메일을 가져오기 위한 코드-->
+    <select id="getEmailByUserId" resultType="String" parameterType="String">
+        SELECT u.email
+        FROM reservation r
+        INNER JOIN user u ON r.user_id = u.user_id
+        WHERE r.user_id = #{userId}
+    </select>
+
+<!--        (영준) reservation_start 가 하루 앞으로 다가오면 select 하는 코드-->
+    <select id="sendOnedaysBefore" resultType="com.green.smarty.dto.ReservationDTO">
+        SELECT r.reservation_id, r.user_id, r.court_id, r.reservation_start, r.reservation_end, c.facility_id
+        FROM reservation r
+        JOIN court c ON r.court_id = c.court_id
+        WHERE DATE(r.reservation_start) = DATE_SUB(CURDATE(), INTERVAL 1 DAY);
+    </select>
+
+
+</mapper>

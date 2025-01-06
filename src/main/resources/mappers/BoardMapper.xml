@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.BoardMapper">
+<!--    게시글 작성-->
+    <insert id="insertBoard" parameterType="com.green.smarty.dto.BoardDTO" useGeneratedKeys="true" keyProperty="board_id">
+        INSERT INTO board (
+        title, content, send_date, content_type, view_count, good_btn, bad_btn, is_deleted, user_id
+        )
+        VALUES (
+        #{title}, #{content}, NOW(), #{content_type}, #{view_count}, #{good_btn}, #{bad_btn}, #{is_deleted}, #{user_id}
+        )
+    </insert>
+<!--    board_id로 게시글 조회-->
+    <select id="selectBoardById" resultType="com.green.smarty.dto.BoardDTO" parameterType="int">
+        SELECT *
+        FROM board
+        WHERE board_id = #{board_id}
+        AND is_deleted = 0
+    </select>
+<!--    board_id로 게시글 삭제-->
+    <update id="removeBoard" parameterType="int">
+        UPDATE board
+        SET
+        is_deleted = 1,
+        deleted_date = NOW()
+        WHERE board_id = #{board_id}
+    </update>
+<!--    게시글 전체 조회-->
+    <select id="selectAllBoard" resultType="com.green.smarty.dto.BoardDTO">
+        SELECT *
+        FROM board
+        WHERE is_deleted = 0
+        ORDER BY send_date DESC
+    </select>
+<!--    삭제되지 않은 모든 게시글 전체 조회-->
+    <select id="getVisibleBoards" resultType="com.green.smarty.dto.BoardDTO">
+        SELECT board_id, title, content, send_date, update_date, content_type, view_count, good_btn, bad_btn, user_id
+        FROM board
+        WHERE is_deleted = 0
+        ORDER BY send_date DESC
+    </select>
+<!--    조회수 증가-->
+    <update id="updateViewCount" parameterType="int">
+        UPDATE board SET view_count = view_count + 1 WHERE board_id = #{board_id}
+    </update>
+
+<!--    게시글 수정-->
+    <update id="updateBoardById" parameterType="com.green.smarty.dto.BoardDTO">
+        UPDATE board
+        SET
+        title = #{title},
+        content = #{content},
+        content_type = #{content_type},
+        update_date = NOW()
+        WHERE board_id = #{board_id}
+    </update>
+
+<!--    제목, 내용, 작성자, 전체 조건으로 검색-->
+    <select id="searchBoard" resultType="com.green.smarty.dto.BoardDTO">
+        SELECT * FROM board
+        WHERE is_deleted = 0
+        <choose>
+            <when test="type == 'user_id'">
+                AND user_id LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+            <when test="type == 'title'">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+            <when test="type == 'content'">
+                AND content LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+            <otherwise>
+                AND (
+                title LIKE CONCAT('%', #{keyword}, '%')
+                OR content LIKE CONCAT('%', #{keyword}, '%')
+                OR user_id LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </otherwise>
+        </choose>
+        ORDER BY send_date DESC
+    </select>
+
+<!--    좋아요 증가-->
+    <update id="updateGood" parameterType="int">
+        UPDATE board SET good_btn = good_btn + 1 WHERE board_id = #{board_id}
+    </update>
+
+<!--    싫어요 증가-->
+    <update id="updateBad" parameterType="int">
+        UPDATE board SET bad_btn = bad_btn + 1 WHERE board_id = #{board_id}
+    </update>
+
+<!--    삭제된 날짜-->
+    <update id="deletedDate">
+        UPDATE board
+        SET deleted_date = NOW()
+        WHERE board_id = #{board_id}
+    </update>
+
+</mapper>

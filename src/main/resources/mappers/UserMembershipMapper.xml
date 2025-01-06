@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.UserMembershipMapper">
+
+    <!-- 결제 금액 합계를 구하는 쿼리 -->
+    <select id="getPaymentDetailsByUserId" parameterType="String" resultType="float">
+        SELECT COALESCE(SUM(p.amount), 0)
+        FROM payment p
+        LEFT JOIN reservation r ON p.reservation_id = r.reservation_id
+        LEFT JOIN enrollment e ON p.enrollment_id = e.enrollment_id
+        LEFT JOIN rental ren ON p.user_id = ren.user_id
+        WHERE (r.user_id = #{userId} OR e.user_id = #{userId} OR ren.user_id = #{userId})
+        AND (
+        (MONTH(CURRENT_DATE) BETWEEN 1 AND 6 AND p.payment_date BETWEEN DATE_FORMAT(CURRENT_DATE, '%Y-01-01') AND DATE_FORMAT(CURRENT_DATE, '%Y-06-30')) OR
+        (MONTH(CURRENT_DATE) BETWEEN 7 AND 12 AND p.payment_date BETWEEN DATE_FORMAT(CURRENT_DATE, '%Y-07-01') AND DATE_FORMAT(CURRENT_DATE, '%Y-12-31'))
+        );
+    </select>
+
+
+    <!-- 결제금액 업데이트 -->
+    <update id="updateTotalPaymentAmount" parameterType="map">
+        UPDATE membership
+        SET total_payment_amount = #{totalPaymentAmount}
+        WHERE user_id = #{userId};
+    </update>
+
+    <!-- 결제금액 불러오기 -->
+    <select id="getTotalPaymentAmountByUserId" resultType="float">
+        SELECT total_payment_amount
+        FROM membership
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 멤버십 등급 추가해주기 -->
+    <insert id="insertMembership" parameterType="com.green.smarty.vo.MembershipVO">
+        INSERT INTO membership (membership_id, membership_level, user_id, total_payment_amount)
+        VALUES (#{membership_id}, #{membership_level}, #{user_id}, #{total_payment_amount})
+    </insert>
+
+    <!-- 멤버십 등급 업데이트 -->
+    <update id="updateMembershipLevel" parameterType="com.green.smarty.vo.MembershipVO">
+        UPDATE membership
+        SET membership_level = #{membership_level}
+        WHERE user_id = #{user_id}
+    </update>
+
+    <!-- 회원 등급 불러오기 -->
+    <select id="getUserMembergrade" parameterType="String" resultType="com.green.smarty.vo.MembershipVO">
+        SELECT *
+        FROM membership
+        WHERE user_id = #{user_id}
+    </select>
+
+    <!-- 6개월마다 멤버십 리셋 쿼리 -->
+    <update id="resetMembershipEvery6Months">
+        UPDATE membership
+        SET
+        membership_status = 'INACTIVE',
+        used_benefit_count = 0,
+        last_reset_date = CURRENT_TIMESTAMP,
+        membership_level = '브론즈',
+        total_payment_amount = 0
+        WHERE
+        MONTH(CURRENT_TIMESTAMP) = 1 OR MONTH(CURRENT_TIMESTAMP) = 7;
+    </update>
+
+<!--    (영준) user_id로 membership_Level 불러오기-->
+    <select id="getlevelbyuserid" parameterType="String">
+        SELECT membership_level FROM membership
+        WHERE user_id = #{user_id}
+    </select>
+
+<!--    (영준) user_id로 email 불러오기-->
+    <select id="getEmailbyuserId" parameterType="String">
+        SELECT email FROM membership m
+        INNER JOIN user u ON m.user_id = u.user_id
+        WHERE m.user_id = #{user_id}
+    </select>
+
+<!--    (영준) user_id로 user_name 불러오기-->
+    <select id="getUsernamebyuserId" parameterType="String">
+        SELECT user_name FROM membership m
+        INNER JOIN user u ON m.user_id = u.user_id
+        WHERE m.user_id = #{user_id}
+    </select>
+
+</mapper>
+

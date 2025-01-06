@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.smarty.mapper.CartMapper">
+
+    <insert id="addCart" parameterType="com.green.smarty.vo.CartVO">
+        INSERT INTO cart (cart_id, user_id, product_id, quantity, created_at)
+        VALUES (#{cart_id}, #{user_id}, #{product_id}, #{quantity}, NOW())
+        ON DUPLICATE KEY UPDATE quantity = quantity + #{quantity}
+    </insert>
+
+    <select id="getUserCart" parameterType="String" resultType="com.green.smarty.dto.UserCartListDTO">
+        SELECT
+            c.cart_id,
+            c.user_id,
+            c.product_id,
+            c.quantity,
+            c.created_at,
+            c.updated_at,
+            p.product_name,
+            p.price,
+            pa.file_name
+        FROM
+            cart c
+        INNER JOIN
+            product p on c.product_id = p.product_id
+        LEFT JOIN
+            product_attach pa ON p.product_id = pa.product_id
+        WHERE
+            c.user_id = #{user_id}
+    </select>
+
+    <update id="updateCart" parameterType="com.green.smarty.vo.CartVO">
+        UPDATE
+            cart
+        SET
+            quantity = #{quantity}
+        WHERE
+            cart_id = #{cart_id}
+    </update>
+
+    <delete id="removeCart" parameterType="String">
+        DELETE FROM cart WHERE cart_id = #{cart_id}
+    </delete>
+
+    <delete id="clearCart" parameterType="String">
+        DELETE FROM cart WHERE user_id = #{user_id}
+    </delete>
+
+    <select id="getAllCart" resultType="com.green.smarty.vo.CartVO">
+        SELECT * FROM cart
+    </select>
+
+</mapper>
