@@ -1,14 +1,13 @@
 plugins {
 	id 'java'
-	id 'war'
 	id 'org.springframework.boot' version '3.3.4'
 	id 'io.spring.dependency-management' version '1.1.6'
 }
 
-jar {
-    archiveBaseName = 'app'  // JAR 파일 이름 설정
-    archiveVersion = '1.0.0'   // 버전 설정
-}
+// jar {
+//     archiveBaseName = 'app'  // JAR 파일 이름 설정
+//     archiveVersion = '1.0.0'   // 버전 설정
+// }
 
 group = 'com.green'
 version = '0.0.1-SNAPSHOT'
@@ -41,7 +40,7 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	compileOnly 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

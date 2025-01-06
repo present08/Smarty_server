@@ -1,5 +1,5 @@
 FROM amazoncorretto:17.0.13
-ARG JAR_FILE=target/*.jar
+ARG JAR_FILE=build/libs/*.jar
 ARG PROFILES
 ARG ENV
 COPY ${JAR_FILE} app.jar
