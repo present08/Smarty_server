@@ -1,4 +1,4 @@
-FROM amazoncorretto:17-appine-jdk
+FROM amazoncorretto:17.0.13
 ARG JAR_FILE=target/*.jar
 ARG PROFILES
 ARG ENV
