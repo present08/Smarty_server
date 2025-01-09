@@ -57,7 +57,7 @@
     select * from rental
 </select>
 <select id="getReservationAll" resultType="com.green.smarty.vo.ReservationVO">
-    select * from reservation123
+    select * from reservation
 </select>
 <select id="getUserAll" resultType="com.green.smarty.vo.UserVO">
     select * from user
