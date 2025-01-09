@@ -44,6 +44,7 @@ public class AdminClassService {
 
             // 처리2-1) weekday, class_data 생성
             List<String> weekdaySet = classList.get(i).getWeekday();
+            System.out.println("서비스 처리2-1) weekdaySet : " + classList.get(i));
             System.out.println("서비스 처리2-1) weekdaySet : " + weekdaySet);
 
             LocalDate start_date = classList.get(i).getStart_date();
