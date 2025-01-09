@@ -88,8 +88,8 @@ jobs:
           script_stop: true
           script: |
             sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload' 
-            sudo docker cp ${{env.CURRENT_UPSTREAM}}:/upload /upload
-            sudo docker cp /upload/. ${{env.TARGET_UPSTREAM}}:/upload
+            sudo docker cp ${{env.CURRENT_UPSTREAM}}:/upload/. /upload/.
+            sudo docker cp /upload/. ${{env.TARGET_UPSTREAM}}:/upload/.
 
       - name: Stop current server
         uses: appleboy/ssh-action@master
