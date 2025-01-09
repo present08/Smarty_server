@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.green.smarty.SmartyApplication;
+import com.green.smarty.dto.ClassAdminDTO;
 import com.green.smarty.mapper.UserClassMapper;
 import com.green.smarty.mapper.UserReservationMapper;
 import com.green.smarty.service.UserClassService;
@@ -231,8 +233,85 @@ public class Test1 {
 
     @Test
     public void classEnrollment() {
-        Map<String, String> enrollData = Map.of("user_id","qwe", "class_id","C_642801");
+        Map<String, String> enrollData = Map.of("user_id", "qwe", "class_id", "C_642801");
         EnrollmentVO enrollCheck = userClassMapper.enrollCheck(enrollData);
         System.out.println("enrollCheck ==== " + enrollCheck);
+    }
+
+    @Test
+    public void register() {
+        List<String> days = Arrays.asList("월요일", "수요일", "금요일");
+        List<ClassAdminDTO> classList = new ArrayList<>();
+        ClassAdminDTO dto = ClassAdminDTO.builder()
+                .facility_id("FC_1736396051473")
+                .class_id("C_147302")
+                .class_name("수영교실1")
+                .start_date(LocalDate.of(2025, 01, 9))
+                .end_date(LocalDate.of(2025, 01, 23))
+                .start_time(LocalTime.of(13, 51, 0))
+                .end_time(LocalTime.of(15, 51, 0))
+                .price(1000)
+                .class_size(3)
+                .weekday(days)
+                .class_date(null)
+                .build();
+        classList.add(dto);
+
+        for (int i = 0; i < classList.size(); i++) {
+            if (classList.get(i).getClass_id() == null) {
+                // 처리1) class_id 생성 : "C_" + 시설 id 마지막 4자리 + 01
+                String facility_id = classList.get(i).getFacility_id();
+                String idx = "";
+                if ((i + 1) - 10 < 0)
+                    idx = "0" + (i + 1);
+                else
+                    idx = "i+1";
+                String class_id = "C_" + facility_id.substring(12) + idx;
+                classList.get(i).setClass_id(class_id);
+                System.out.println("서비스 처리1) 클래스 id 생성 : " + class_id);
+            }
+
+            // 처리2-1) weekday, class_data 생성
+            List<String> weekdaySet = classList.get(i).getWeekday();
+            System.out.println("서비스 처리2-1) weekdaySet : " +  classList.get(i).getWeekday());
+            System.out.println("서비스 처리2-1) weekdaySet : " + weekdaySet);
+
+            LocalDate start_date = classList.get(i).getStart_date();
+            LocalDate end_date = classList.get(i).getEnd_date();
+            LocalDate current_date = start_date;
+
+            List<LocalDate> class_date = new ArrayList<>();
+            List<String> weekday = new ArrayList<>();
+
+            while (current_date.compareTo(end_date) <= 0) {
+
+                // step1) current_date 의 DayOfWeek 객체 생성 및 요일 추출
+                DayOfWeek current = current_date.getDayOfWeek();
+                String currentS = current.getDisplayName(TextStyle.FULL, Locale.getDefault());
+
+                // step2) 지정된 요일과 일치하는 경우 schedule 맵에 담기
+                // key: 수업 날짜, value: 수업 요일
+                for (String day : weekdaySet) {
+                    if (currentS.equals(day)) {
+                        class_date.add(current_date);
+                        weekday.add(day);
+                    }
+                }
+                // step3) 날짜 하루 증가시키기
+                current_date = current_date.plusDays(1);
+            }
+            System.out.println("서비스 처리 2-2) 생성된 class_date : " + class_date);
+            System.out.println("서비스 처리 2-2) 생성된 weekday : " + weekday);
+
+            // 처리2-2) class_detail 등록
+            for (int j = 0; j < class_date.size(); j++) {
+                ClassDetailVO classDetailVO = ClassDetailVO.builder()
+                        .class_id(classList.get(i).getClass_id())
+                        .weekday(weekday.get(j))
+                        .class_date(class_date.get(j))
+                        .build();
+                System.out.println(classDetailVO);
+            }
+        }
     }
 }
