@@ -35,9 +35,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/hc", "/env").permitAll();
                     registry.requestMatchers("/api/security/**").permitAll();
-                    registry.requestMatchers("/api/user/class/").permitAll();
-                    registry.requestMatchers("/api/user/products/").permitAll();
-                    registry.requestMatchers("/api/user/reservation/").permitAll();
+                    registry.requestMatchers("/api/user/class/**").permitAll();
+                    registry.requestMatchers("/api/user/products/**").permitAll();
+                    registry.requestMatchers("/api/user/reservation/**").permitAll();
                     registry.requestMatchers("/api/admin/facilities/images/**").permitAll();
                     registry.requestMatchers("/api/admin/products/images/**").permitAll();
                     registry.requestMatchers("/api/user/reservation/uploads/**").permitAll();
