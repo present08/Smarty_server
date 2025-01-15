@@ -35,9 +35,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/hc", "/env").permitAll();
                     registry.requestMatchers("/api/security/**").permitAll();
-                    registry.requestMatchers("/api/user/class/**").permitAll();
-                    registry.requestMatchers("/api/user/products/**").permitAll();
-                    registry.requestMatchers("/api/user/reservation/**").permitAll();
+                    registry.requestMatchers("/api/user/class/").permitAll();
+                    registry.requestMatchers("/api/user/products/").permitAll();
+                    registry.requestMatchers("/api/user/reservation/").permitAll();
                     registry.requestMatchers("/api/admin/facilities/images/**").permitAll();
                     registry.requestMatchers("/api/admin/products/images/**").permitAll();
                     registry.requestMatchers("/api/user/reservation/uploads/**").permitAll();
@@ -56,7 +56,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://43.201.209.78", "http://www.smartyacademy.shop","http://localhost:3000"));
+        configuration.setAllowedOrigins(
+                List.of("http://43.201.209.78", "http://www.smartyacademy.shop", "http://localhost:3000"));
         configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true); // 인증 정보를 포함한 요청 허용
