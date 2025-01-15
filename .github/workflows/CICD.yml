@@ -43,10 +43,11 @@ jobs:
     steps:
       - name: Set target IP
         run: |
-          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.LIVE_SERVER_IP }}/env")
+          # STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.LIVE_SERVER_IP }}:8080/env")
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.LIVE_SERVER_IP }}:8080/env" || echo "Curl failed")
           echo $STATUS
-          if [ $STATUS = 200 ]; then
-            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.LIVE_SERVER_IP }}/env")
+          if [ $STATUS -eq 200 ]; then
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.LIVE_SERVER_IP }}:8080/env")
           else
             CURRENT_UPSTREAM=green
           fi
@@ -88,6 +89,8 @@ jobs:
           script_stop: true
           script: |
             sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload' 
+            sudo docker cp ${{env.CURRENT_UPSTREAM}}:/upload/. /upload/.
+            sudo docker cp /upload/. ${{env.TARGET_UPSTREAM}}:/upload/.
 
       - name: Stop current server
         uses: appleboy/ssh-action@master
