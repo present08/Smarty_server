@@ -20,5 +20,7 @@ public class ProductDTO {
     private boolean product_images;
     private int stock;
     private String size;
-    private List<ProductAttachVO> attachFiles;
+    private String origin_path;
+    private String thumbnail_path;
+    private String file_name;
 }
