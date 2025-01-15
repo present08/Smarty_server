@@ -54,14 +54,12 @@ public class AdminClassService {
             List<LocalDate> class_date = new ArrayList<>();
             List<String> weekday = new ArrayList<>();
 
-            System.out.println("현재날짜 : "+ current_date);
 
             while (current_date.compareTo(end_date) <= 0) {
 
                 // step1) current_date 의 DayOfWeek 객체 생성 및 요일 추출
                 DayOfWeek current = current_date.getDayOfWeek();
                 String currentS = current.getDisplayName(TextStyle.FULL, Locale.KOREAN);
-                System.out.println("이건 분류같은데 뭐냐 "+currentS);
                 // step2) 지정된 요일과 일치하는 경우 schedule 맵에 담기
                 // key: 수업 날짜, value: 수업 요일
                 for (String day : weekdaySet) {
@@ -69,11 +67,9 @@ public class AdminClassService {
                         class_date.add(current_date);
                         weekday.add(day);
                     }
-                    System.out.println("날짜 가져오기: " + day);
                 }
                 // step3) 날짜 하루 증가시키기
                 current_date = current_date.plusDays(1);
-                System.out.println("날짜 증가 : " + class_date);
             }
             System.out.println("서비스 처리 2-2) 생성된 class_date : " + class_date);
             System.out.println("서비스 처리 2-2) 생성된 weekday : " + weekday);
