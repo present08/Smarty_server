@@ -84,7 +84,7 @@
         WHERE product_id = #{product_id}
     </select>
 
-    <select id="getProductDTO" resultType="com.green.smarty.vo.ProductDTO">
+    <select id="getProductDTO" resultType="com.green.smarty.dto.ProductDTO">
        select * from product p join product_attach pa on using(product_id);
     </select>
 
