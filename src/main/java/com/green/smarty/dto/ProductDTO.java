@@ -14,6 +14,7 @@ public class ProductDTO {
     private String product_id;
     private String facility_id;
     private String product_name;
+    private String management_type;
     private int price;
     private String facility_name;
     private boolean product_images;

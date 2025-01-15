@@ -1,7 +1,8 @@
     package com.green.smarty.controller;
 
 
-    import com.green.smarty.mapper.UserProductMapper;
+    import com.green.smarty.dto.ProductDTO;
+import com.green.smarty.mapper.UserProductMapper;
     import com.green.smarty.service.UserProductService;
     import com.green.smarty.vo.ProductAttachVO;
     import com.green.smarty.vo.ProductVO;
@@ -33,8 +34,8 @@
 
         // product Data 전달
         @GetMapping("/")
-        public List<ProductVO> getProduct() {
-                List<ProductVO> productList = productMapper.getAllProducts();
+        public List<ProductDTO> getProduct() {
+                List<ProductDTO> productList = productMapper.getProductDTO();
     //            log.info("Products from controller: {}", productList);
                 return productList;
         }

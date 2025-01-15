@@ -14,6 +14,8 @@ public interface UserProductMapper {
 
     List<ProductVO> getAllProducts();
 
+    List<ProductDTO> getProductDTO();
+
     ProductVO getProductById(String product_id);
 
     List<ProductDTO> getProductsByFacilityId(String facility_id);

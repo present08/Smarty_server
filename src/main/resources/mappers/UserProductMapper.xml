@@ -84,5 +84,9 @@
         WHERE product_id = #{product_id}
     </select>
 
+    <select id="getProductDTO" resultType="ProductDTO">
+       select * from product p join product_attach pa on pa.product_id = p.product_id;
+    </select>
+
 
 </mapper>
