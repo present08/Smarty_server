@@ -58,7 +58,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
                 List.of("http://43.201.209.78", "http://www.smartyacademy.shop/green",
-                        "http://www.smartyacademy.shop/blue", "http://localhost:3000"));
+                        "http://www.smartyacademy.shop/blue","http://www.smartyacdemy.shop", "http://localhost:3000"));
         configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true); // 인증 정보를 포함한 요청 허용
