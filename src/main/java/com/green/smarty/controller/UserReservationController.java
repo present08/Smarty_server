@@ -64,6 +64,7 @@ public class UserReservationController {
     @GetMapping("/")
     public List<FacilityDTO> getFacilityVO() {
         List<FacilityDTO> dto = reservationService.getFacility();
+        System.out.println("reservation 전달한 값 " + dto);
         return dto;
     }
 
